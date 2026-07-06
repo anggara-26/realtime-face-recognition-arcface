@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: faceid
+    env: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    healthCheckPath: /
+    envVars:
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: DJANGO_DEBUG
+        value: "false"
+
+# Free plan has no persistent disk, so db.sqlite3 + enrolled gallery photos
+# reset on every deploy/restart/sleep-wake cycle. To keep data across
+# restarts, add a `disk:` block here and upgrade this service to the
+# Starter plan (disks require a paid instance type), plus set DATA_DIR to
+# the disk's mount path.
