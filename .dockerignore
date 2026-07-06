@@ -1,0 +1,12 @@
+venv/
+__pycache__/
+*.pyc
+.git/
+.claude/
+db.sqlite3
+media/gallery/*
+!media/gallery/.gitkeep
+reports/*.png
+data/demo/
+.insightface/
+staticfiles/

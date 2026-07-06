@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pengenalan Wajah Real-Time &mdash; Identifikasi Buronan (Prototype)</title>
+<link rel="stylesheet" href="{% static 'faceid/css/style.css' %}">
+</head>
+<body>
+<header class="topbar">
+  <h1>CCTV &mdash; Pengenalan Wajah Real-Time</h1>
+  <p class="subtitle">Studi Kasus: Identifikasi Buronan &middot; Deteksi Wajah + Embedding ArcFace / dlib &middot; Pendaftaran Satu Foto</p>
+</header>
+
+<main class="layout">
+  <section class="panel camera-panel">
+    <div class="video-wrap">
+      <video id="video" autoplay muted playsinline></video>
+      <canvas id="overlay"></canvas>
+      <div class="video-badge" id="videoBadge">CCTV &mdash; LIVE</div>
+    </div>
+
+    <div class="controls">
+      <label>
+        Backend / Model
+        <select id="engineSelect">
+          {% for choice in engine_choices %}
+          <option value="{{ choice }}" {% if choice == default_engine %}selected{% endif %}>
+            {% if choice == "arcface" %}ArcFace (optimasi, 512-D){% else %}dlib (baseline, 128-D){% endif %}
+          </option>
+          {% endfor %}
+        </select>
+      </label>
+
+      <label>
+        Ambang Cosine Similarity: <span id="thresholdValue"></span>
+        <input type="range" id="thresholdSlider" min="0" max="1" step="0.01">
+      </label>
+
+      <div class="btn-row">
+        <button id="startBtn" class="btn primary">Mulai Pengenalan</button>
+        <button id="stopBtn" class="btn" disabled>Hentikan</button>
+        <label class="fps-label">Interval (ms): <input id="intervalMs" type="number" value="700" min="150" step="50" style="width:70px"></label>
+      </div>
+      <p class="hint" id="statusLine">Kamera belum aktif.</p>
+    </div>
+  </section>
+
+  <section class="panel side-panel">
+    <div class="card">
+      <h2>Pendaftaran Satu Foto (One-Shot)</h2>
+      <form id="enrollForm">
+        <label>Nama
+          <input type="text" id="enrollName" placeholder="mis. Buronan_A" required>
+        </label>
+        <label>Foto (bisa lebih dari satu untuk mode multi-foto)
+          <input type="file" id="enrollFiles" accept="image/*" multiple>
+        </label>
+        <div class="btn-row">
+          <button type="button" id="snapshotBtn" class="btn">Ambil Snapshot dari Kamera</button>
+        </div>
+        <label class="checkbox-row">
+          <input type="checkbox" id="ttaCheckbox">
+          Gunakan Test-Time Augmentation (flip / rotasi / kecerahan) &mdash; hanya utk 1 foto
+        </label>
+        <button type="submit" class="btn primary full">Daftarkan</button>
+        <p class="hint" id="enrollStatus"></p>
+      </form>
+    </div>
+
+    <div class="card">
+      <h2>Galeri Identitas Terdaftar</h2>
+      <ul id="galleryList" class="gallery-list"></ul>
+    </div>
+  </section>
+</main>
+
+<script>
+  window.APP_CONFIG = {
+    thresholds: {{ thresholds_json|safe }},
+  };
+</script>
+<script src="{% static 'faceid/js/app.js' %}"></script>
+</body>
+</html>
