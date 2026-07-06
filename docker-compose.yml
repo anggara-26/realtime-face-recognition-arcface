@@ -1,0 +1,11 @@
+services:
+  web:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - ./storage:/data
+    ports:
+      # bind to localhost only -- your existing nginx reverse-proxies to
+      # this port, the container is never exposed directly to the internet
+      - "127.0.0.1:8000:8000"

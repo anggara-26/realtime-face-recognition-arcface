@@ -1,0 +1,28 @@
+# Reference snippet to add to your existing nginx config (server block for
+# your domain, inside the TLS-terminating `server { listen 443 ssl; ... }`).
+# Adjust `server_name` and cert paths to match your existing setup.
+
+server {
+    listen 443 ssl;
+    server_name yourdomain.com;
+
+    # ... your existing ssl_certificate / ssl_certificate_key directives ...
+
+    # Uploaded webcam frames are base64 JSON in the request body; bump this
+    # if you hit "413 Request Entity Too Large" on /api/recognize/ or /api/enroll/.
+    client_max_body_size 10m;
+
+    location / {
+        proxy_pass http://127.0.0.1:8000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+
+server {
+    listen 80;
+    server_name yourdomain.com;
+    return 301 https://$host$request_uri;
+}

@@ -18,6 +18,11 @@ SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "dev-only-secret-key-not-for-pr
 
 DEBUG = os.environ.get("DJANGO_DEBUG", "true").lower() == "true"
 
+# Behind a reverse proxy (nginx on a VPS, or Railway/Render's own proxy) TLS
+# is terminated before Django ever sees the request, so without this,
+# request.is_secure() would incorrectly read as False.
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
 ALLOWED_HOSTS = [h for h in os.environ.get("DJANGO_ALLOWED_HOSTS", "*").split(",") if h]
 _railway_domain = os.environ.get("RAILWAY_PUBLIC_DOMAIN")
 _render_domain = os.environ.get("RENDER_EXTERNAL_HOSTNAME")
