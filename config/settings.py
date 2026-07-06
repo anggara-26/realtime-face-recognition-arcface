@@ -20,15 +20,23 @@ DEBUG = os.environ.get("DJANGO_DEBUG", "true").lower() == "true"
 
 ALLOWED_HOSTS = [h for h in os.environ.get("DJANGO_ALLOWED_HOSTS", "*").split(",") if h]
 _railway_domain = os.environ.get("RAILWAY_PUBLIC_DOMAIN")
-if _railway_domain:
-    ALLOWED_HOSTS.append(_railway_domain)
+_render_domain = os.environ.get("RENDER_EXTERNAL_HOSTNAME")
+for _host in (_railway_domain, _render_domain):
+    if _host:
+        ALLOWED_HOSTS.append(_host)
 
 # Trust ngrok tunnel origins for CSRF (subdomain changes each session, so
 # wildcard the whole ngrok-free.app domain rather than pinning one URL), plus
-# Railway's *.up.railway.app domain and anything set via env for a custom domain.
-CSRF_TRUSTED_ORIGINS = ["https://*.ngrok-free.app", "https://*.up.railway.app"]
-if _railway_domain:
-    CSRF_TRUSTED_ORIGINS.append(f"https://{_railway_domain}")
+# Railway's *.up.railway.app / Render's *.onrender.com domains and anything
+# set via env for a custom domain.
+CSRF_TRUSTED_ORIGINS = [
+    "https://*.ngrok-free.app",
+    "https://*.up.railway.app",
+    "https://*.onrender.com",
+]
+for _host in (_railway_domain, _render_domain):
+    if _host:
+        CSRF_TRUSTED_ORIGINS.append(f"https://{_host}")
 _extra_origins = os.environ.get("DJANGO_CSRF_TRUSTED_ORIGINS", "")
 CSRF_TRUSTED_ORIGINS += [o for o in _extra_origins.split(",") if o]
 
