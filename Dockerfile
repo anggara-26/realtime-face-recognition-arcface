@@ -1,4 +1,4 @@
-FROM python:3.11-slim
+FROM python:3.12-slim
 
 # System deps: build toolchain for dlib (compiled from source), plus the
 # runtime libs opencv/onnxruntime need that aren't in the slim base image.
