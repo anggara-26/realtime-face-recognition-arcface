@@ -9,3 +9,5 @@ data/demo/
 .insightface/
 staticfiles/
 .claude/
+.env
+storage/
